@@ -11,3 +11,5 @@ server:
     github: https://github.com
     k8s: https://dl.k8s.io
     get_helm: https://get.helm.sh
+  goproxy:
+    golang: https://proxy.golang.org
