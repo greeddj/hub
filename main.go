@@ -160,6 +160,27 @@ func startServer(c *cli.Context) error {
 		s.GET("/get/*", handlers.Static(k)).Name = fmt.Sprintf("static::%s", k)
 	}
 
+	for k := range cfg.Server.GOPROXY {
+		g := e.Group(fmt.Sprintf("/goproxy/%s", k))
+		g.GET("/*", func(c echo.Context) error {
+			path := c.Param("*")
+			switch {
+			case strings.HasSuffix(path, "/@v/list"):
+				return handlers.GoProxyList(k)(c)
+			case strings.HasSuffix(path, ".info"):
+				return handlers.GoProxyInfo(k)(c)
+			case strings.HasSuffix(path, ".mod"):
+				return handlers.GoProxyMod(k)(c)
+			case strings.HasSuffix(path, ".zip"):
+				return handlers.GoProxyZip(k)(c)
+			case strings.HasSuffix(path, "/@latest"):
+				return handlers.GoProxyLatest(k)(c)
+			default:
+				return c.String(http.StatusNotFound, "404 page not found")
+			}
+		}).Name = fmt.Sprintf("goproxy::%s", k)
+	}
+
 	for k, v := range cfg.Server.Galaxy {
 		g := e.Group(fmt.Sprintf("/galaxy/%s", k))
 		if v.URL != "" && v.Dir != "" {
