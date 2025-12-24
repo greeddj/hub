@@ -40,7 +40,7 @@ func RubyGems(key string) echo.HandlerFunc {
 		upstreamBase := strings.TrimSuffix(cfg.Server.RUBYGEMS[key], "/")
 		url := upstreamBase + "/"
 		if upstreamPath != "" {
-			url = url + upstreamPath
+			url += upstreamPath
 		}
 		if query != "" {
 			url = url + "?" + query
