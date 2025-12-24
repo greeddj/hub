@@ -25,7 +25,7 @@ func GalaxyProxyCollection(key string) echo.HandlerFunc {
 		dest := fmt.Sprintf("%s/galaxy/%s/index/%s/%s/index.json", cfg.Dir, key, namespace, name)
 
 		headers := types.RequestHeaders{
-			"UserAgent": "ansible-galaxy",
+			"User-Agent": "ansible-galaxy",
 		}
 		status, err := misc.DownloadFile(url, dest, headers)
 		if err != nil {
@@ -62,7 +62,7 @@ func GalaxyProxyCollectionVersions(key string) echo.HandlerFunc {
 		dest := fmt.Sprintf("%s/galaxy/%s/index/%s/%s/versions/index/%s", cfg.Dir, key, namespace, name, c.QueryString())
 
 		headers := types.RequestHeaders{
-			"UserAgent": "ansible-galaxy",
+			"User-Agent": "ansible-galaxy",
 		}
 		status, err := misc.DownloadFile(url, dest, headers)
 		if err != nil {
@@ -100,7 +100,7 @@ func GalaxyProxyCollectionVersionInfo(key string) echo.HandlerFunc {
 		host := c.Request().Host
 
 		headers := types.RequestHeaders{
-			"UserAgent": "ansible-galaxy",
+			"User-Agent": "ansible-galaxy",
 		}
 		_, err := misc.DownloadFile(url, dest, headers)
 		if err != nil {
@@ -143,7 +143,7 @@ func GalaxyProxyCollectionGet(key string) echo.HandlerFunc {
 			url := fmt.Sprintf("%s/api/v3/collections/%s/%s/versions/%s", cfg.Server.Galaxy[key].URL, namespace, name, version)
 
 			headers := types.RequestHeaders{
-				"UserAgent": "ansible-galaxy",
+				"User-Agent": "ansible-galaxy",
 			}
 			_, err := misc.DownloadFile(url, versionFile, headers)
 			if err != nil {
@@ -161,7 +161,7 @@ func GalaxyProxyCollectionGet(key string) echo.HandlerFunc {
 		dest := fmt.Sprintf("%s/galaxy/%s/binary/%s/%s/%s-%s-%s.tar.gz", cfg.Dir, key, namespace, name, namespace, name, version)
 
 		headers := types.RequestHeaders{
-			"UserAgent": "ansible-galaxy",
+			"User-Agent": "ansible-galaxy",
 		}
 		if _, err := os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 			status, err := misc.DownloadFile(url, dest, headers)

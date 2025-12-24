@@ -20,7 +20,7 @@ func downloadAndCacheFile(c echo.Context, key, loggerNS, url, dest string) error
 	logger := c.Get("logger").(*zap.SugaredLogger)
 
 	headers := types.RequestHeaders{
-		"UserAgent": "go/goproxy",
+		"User-Agent": "go/goproxy",
 	}
 
 	status, err := misc.DownloadFile(url, dest, headers)
@@ -54,7 +54,7 @@ func GoProxyList(key string) echo.HandlerFunc {
 		dest := fmt.Sprintf("%s/goproxy/%s/%s/@v/list", cfg.Dir, key, module)
 
 		headers := types.RequestHeaders{
-			"UserAgent": "go/goproxy",
+			"User-Agent": "go/goproxy",
 		}
 
 		status, err := misc.DownloadFile(url, dest, headers)
@@ -145,7 +145,7 @@ func GoProxyZip(key string) echo.HandlerFunc {
 		dest := fmt.Sprintf("%s/goproxy/%s/%s/@v/%s.zip", cfg.Dir, key, modulePath, version)
 
 		headers := types.RequestHeaders{
-			"UserAgent": "go/goproxy",
+			"User-Agent": "go/goproxy",
 		}
 
 		// Check if file exists and has valid content
@@ -188,7 +188,7 @@ func GoProxyLatest(key string) echo.HandlerFunc {
 		dest := fmt.Sprintf("%s/goproxy/%s/%s/@latest", cfg.Dir, key, module)
 
 		headers := types.RequestHeaders{
-			"UserAgent": "go/goproxy",
+			"User-Agent": "go/goproxy",
 		}
 
 		// @latest should be fetched more frequently, so check if file is older than 1 hour

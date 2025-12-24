@@ -23,7 +23,7 @@ func Static(key string) echo.HandlerFunc {
 		dest := fmt.Sprintf("%s/static/%s/%s", cfg.Dir, key, path)
 
 		headers := types.RequestHeaders{
-			"UserAgent": "curl",
+			"User-Agent": "curl",
 		}
 
 		if _, err := os.Stat(dest); errors.Is(err, os.ErrNotExist) {
