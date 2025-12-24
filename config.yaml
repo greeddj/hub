@@ -2,6 +2,8 @@ dir: _data
 server:
   pypi:
     pypi.org: https://pypi.org/simple
+  rubygems:
+    rubygems: https://rubygems.org
   galaxy:
     ansible:
       url: https://galaxy.ansible.com

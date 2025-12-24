@@ -15,9 +15,10 @@ type ConfigFile struct {
 			URL string `yaml:"url"`
 			Dir string `yaml:"dir"`
 		} `yaml:"galaxy"`
-		PYPI    map[string]string `yaml:"pypi"`
-		Static  map[string]string `yaml:"static"`
-		GOPROXY map[string]string `yaml:"goproxy"`
+		PYPI     map[string]string `yaml:"pypi"`
+		RUBYGEMS map[string]string `yaml:"rubygems"`
+		Static   map[string]string `yaml:"static"`
+		GOPROXY  map[string]string `yaml:"goproxy"`
 	} `yaml:"server"`
 }
 
