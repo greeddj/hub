@@ -57,8 +57,24 @@ Bundler/RubyGems clients fetch a set of plain HTTP resources. HUB proxies and ca
 Bundler mirror example:
 
 ```bash
-bundle config set --global mirror.https://rubygems.org http://localhost:6587/rubygems/rubygems
+# all requests to rubygems.org must be forwarded to localhost:6587/rubygems/rubygems
+bundle config --local mirror.https://rubygems.org http://localhost:6587/rubygems/rubygems
 ```
+
+Gemfile source example:
+
+```Gemfile
+# by default all requests will be forwarded to proxy
+source "http://localhost:6587/rubygems/rubygems"
+gem "puma"
+
+# but for rack gem it will use some other upstream
+source "https://rubygems.org" do
+  gem "rack"
+end
+```
+
+
 
 ### Static files
 
