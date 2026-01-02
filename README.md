@@ -7,6 +7,8 @@ dir: _data
 server:
   pypi:
     pypi.org: https://pypi.org/simple
+  rubygems:
+    rubygems.org: https://rubygems.org
   galaxy:
     ansible:
       url: https://galaxy.ansible.com
@@ -37,6 +39,42 @@ Access cached Galaxy collections:
 ```text
 http://localhost:6587/galaxy/ansible/api/v3/collections/{namespace}/{name}/
 ```
+
+### RubyGems
+
+Use HUB as a RubyGems/Bundler source:
+
+```text
+http://localhost:6587/rubygems/{repo_name}
+```
+
+Bundler/RubyGems clients fetch a set of plain HTTP resources. HUB proxies and caches any path under the configured upstream (wildcard route), including common endpoints:
+
+- Compact index: `/names`, `/versions`, `/info/<gem>`
+- Legacy indexes: `/specs.4.8.gz`, `/latest_specs.4.8.gz`, `/prerelease_specs.4.8.gz`, `/quick/Marshal.4.8/*.gemspec.rz`
+- Gem artifacts: `/gems/<name>-<version>.gem`
+
+Bundler mirror example:
+
+```bash
+# all requests to rubygems.org must be forwarded to localhost:6587/rubygems/rubygems
+bundle config --local mirror.https://rubygems.org http://localhost:6587/rubygems/rubygems
+```
+
+Gemfile source example:
+
+```Gemfile
+# by default all requests will be forwarded to proxy
+source "http://localhost:6587/rubygems/rubygems"
+gem "puma"
+
+# but for rack gem it will use some other upstream
+source "https://rubygems.org" do
+  gem "rack"
+end
+```
+
+
 
 ### Static files
 

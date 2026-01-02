@@ -26,8 +26,8 @@ func PypiSimple(key string) echo.HandlerFunc {
 		scheme := c.Scheme()
 		host := c.Request().Host
 		headers := types.RequestHeaders{
-			"UserAgent": "pypi",
-			"Accept":    "application/vnd.pypi.simple.v1+json",
+			"User-Agent": "pypi",
+			"Accept":     "application/vnd.pypi.simple.v1+json",
 		}
 
 		status, err := misc.DownloadFile(url, dest, headers)
@@ -70,7 +70,7 @@ func PypiPackages(key string) echo.HandlerFunc {
 		var url, sha string
 
 		headers := types.RequestHeaders{
-			"UserAgent": "pypi",
+			"User-Agent": "pypi",
 		}
 
 		indexFileInfo, err := os.Stat(indexDest)
@@ -84,8 +84,8 @@ func PypiPackages(key string) echo.HandlerFunc {
 				url = fmt.Sprintf("%s/%s/", cfg.Server.PYPI[key], name)
 
 				headers = types.RequestHeaders{
-					"UserAgent": "pypi",
-					"Accept":    "application/vnd.pypi.simple.v1+json",
+					"User-Agent": "pypi",
+					"Accept":     "application/vnd.pypi.simple.v1+json",
 				}
 				_, err := misc.DownloadFile(url, indexDest, headers)
 				if err != nil {
@@ -103,8 +103,8 @@ func PypiPackages(key string) echo.HandlerFunc {
 			url = fmt.Sprintf("%s/%s/", cfg.Server.PYPI[key], name)
 
 			headers = types.RequestHeaders{
-				"UserAgent": "pypi",
-				"Accept":    "application/vnd.pypi.simple.v1+json",
+				"User-Agent": "pypi",
+				"Accept":     "application/vnd.pypi.simple.v1+json",
 			}
 			_, err := misc.DownloadFile(url, indexDest, headers)
 			if err != nil {

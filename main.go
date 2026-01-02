@@ -155,6 +155,11 @@ func startServer(c *cli.Context) error {
 		p.GET("/packages/:name/:filename", handlers.PypiPackages(k)).Name = fmt.Sprintf("pypi::%s::packages", k)
 	}
 
+	for k := range cfg.Server.RUBYGEMS {
+		r := e.Group(fmt.Sprintf("/rubygems/%s", k))
+		r.GET("/*", handlers.RubyGems(k)).Name = fmt.Sprintf("rubygems::%s", k)
+	}
+
 	for k := range cfg.Server.Static {
 		s := e.Group(fmt.Sprintf("/static/%s", k))
 		s.GET("/get/*", handlers.Static(k)).Name = fmt.Sprintf("static::%s", k)

@@ -24,7 +24,7 @@ func DownloadFile(url, destination string, headers types.RequestHeaders) (code i
 		code = http.StatusBadRequest
 		return code, err
 	}
-	req.Header.Set("UserAgent", "hub")
+	req.Header.Set("User-Agent", "hub")
 
 	for k, v := range headers {
 		req.Header.Set(k, v)
@@ -38,6 +38,7 @@ func DownloadFile(url, destination string, headers types.RequestHeaders) (code i
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
+		err = fmt.Errorf("upstream returned %s", response.Status)
 		code = response.StatusCode
 		return code, err
 	}
