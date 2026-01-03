@@ -114,8 +114,12 @@ func startServer(c *cli.Context) error {
 				c.Error(err)
 			}
 			stop := time.Now()
+			cacheStatus := res.Header().Get("X-Cache-Status")
+			if cacheStatus == "" {
+				cacheStatus = "UNKNOWN"
+			}
 			message := fmt.Sprintf(
-				"[%s] %s %s requested from %s with status %d in %s [%s]",
+				"[%s] %s %s requested from %s with status %d in %s [%s] cache=%s",
 				c.Request().Host,
 				req.Method,
 				req.RequestURI,
@@ -123,6 +127,7 @@ func startServer(c *cli.Context) error {
 				res.Status,
 				stop.Sub(start).String(),
 				c.Path(),
+				cacheStatus,
 			)
 
 			logger := c.Get("logger").(*zap.SugaredLogger)
