@@ -10,17 +10,17 @@ import (
 
 type PypiMetadata struct {
 	Files []struct {
-		CoreMetadata         interface{} `json:"core-metadata"`
-		DataDistInfoMetadata interface{} `json:"data-dist-info-metadata"`
-		Filename             string      `json:"filename"`
+		CoreMetadata         any    `json:"core-metadata"`
+		DataDistInfoMetadata any    `json:"data-dist-info-metadata"`
+		Filename             string `json:"filename"`
 		Hashes               struct {
 			Sha256 string `json:"sha256"`
 		} `json:"hashes"`
-		RequiresPython string      `json:"requires-python"`
-		Size           int         `json:"size"`
-		UploadTime     time.Time   `json:"upload-time"`
-		URL            string      `json:"url"`
-		Yanked         interface{} `json:"yanked"`
+		RequiresPython string    `json:"requires-python"`
+		Size           int       `json:"size"`
+		UploadTime     time.Time `json:"upload-time"`
+		URL            string    `json:"url"`
+		Yanked         any       `json:"yanked"`
 	} `json:"files"`
 	Meta struct {
 		LastSerial int    `json:"_last-serial"`

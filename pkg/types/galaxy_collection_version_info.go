@@ -68,7 +68,7 @@ type GalaxyCollectionVersionInfo struct {
 		Name           string `json:"name"`
 		MetadataSha256 string `json:"metadata_sha256"`
 	} `json:"namespace"`
-	Signatures interface{} `json:"signatures"`
+	Signatures any `json:"signatures"`
 	Metadata   struct {
 		Authors       []string          `json:"authors"`
 		Contents      []any             `json:"contents"`

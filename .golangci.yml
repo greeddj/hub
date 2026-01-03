@@ -15,6 +15,7 @@ linters:
     - staticcheck
     - unconvert
     - unused
+    - modernize
   settings:
     goconst:
       min-len: 2
