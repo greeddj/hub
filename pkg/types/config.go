@@ -19,6 +19,7 @@ type ConfigFile struct {
 		RUBYGEMS map[string]string `yaml:"rubygems"`
 		Static   map[string]string `yaml:"static"`
 		GOPROXY  map[string]string `yaml:"goproxy"`
+		NPM      map[string]string `yaml:"npm"`
 	} `yaml:"server"`
 }
 

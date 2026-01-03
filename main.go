@@ -186,6 +186,11 @@ func startServer(c *cli.Context) error {
 		}).Name = fmt.Sprintf("goproxy::%s", k)
 	}
 
+	for k := range cfg.Server.NPM {
+		n := e.Group(fmt.Sprintf("/npm/%s", k))
+		n.GET("/*", handlers.NpmProxy(k)).Name = fmt.Sprintf("npm::%s", k)
+	}
+
 	for k, v := range cfg.Server.Galaxy {
 		g := e.Group(fmt.Sprintf("/galaxy/%s", k))
 		if v.URL != "" && v.Dir != "" {
