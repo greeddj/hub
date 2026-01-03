@@ -106,6 +106,7 @@ func handleNpmMetadata(c echo.Context, cfg types.ConfigFile, logger *zap.Sugared
 	if err != nil {
 		logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 		if !cacheExists {
+			c.Response().Header().Add("X-Cache-Status", "ERROR")
 			return c.String(status, "Please check logs...")
 		}
 		c.Response().Header().Add("X-Cache-Status", "STALE")
@@ -174,8 +175,10 @@ func handleNpmTarball(c echo.Context, cfg types.ConfigFile, logger *zap.SugaredL
 		logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 		if _, statErr := os.Stat(dest); errors.Is(statErr, os.ErrNotExist) {
 			logger.Named(loggerNS).Errorf("[FS]: %s", statErr)
+			c.Response().Header().Add("X-Cache-Status", "ERROR")
 			return c.String(status, "Please check logs...")
 		}
+		c.Response().Header().Add("X-Cache-Status", "STALE")
 		logger.Named(loggerNS).Debugf("Remote %s served from local file %s", upstreamURL, dest)
 		return c.File(dest)
 	}
@@ -217,6 +220,7 @@ func handleNpmSearch(c echo.Context, cfg types.ConfigFile, logger *zap.SugaredLo
 		logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 		if _, statErr := os.Stat(dest); errors.Is(statErr, os.ErrNotExist) {
 			logger.Named(loggerNS).Errorf("[FS]: %s", statErr)
+			c.Response().Header().Add("X-Cache-Status", "ERROR")
 			return c.String(status, "Please check logs...")
 		}
 		c.Response().Header().Add("X-Cache-Status", "STALE")

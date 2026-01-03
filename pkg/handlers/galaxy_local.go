@@ -45,6 +45,7 @@ func GalaxyLocalCollection(key string) echo.HandlerFunc {
 		collection.HighestVersion.Href = fmt.Sprintf("/api/v3/collections/%s/%s/versions/%s/", namespace, name, collectionLocal.Latest.Version)
 		collection.UpdatedAt = collectionLocal.Latest.Time.UTC()
 
+		c.Response().Header().Add("X-Cache-Status", "LOCAL")
 		return c.JSON(http.StatusOK, collection)
 	}
 }
@@ -78,6 +79,7 @@ func GalaxyLocalCollectionVersions(key string) echo.HandlerFunc {
 			collectionVersions.Data = append(collectionVersions.Data, verInfo)
 		}
 
+		c.Response().Header().Add("X-Cache-Status", "LOCAL")
 		return c.JSON(http.StatusOK, collectionVersions)
 	}
 }
@@ -177,6 +179,7 @@ func GalaxyLocalCollectionVersionInfo(key string) echo.HandlerFunc {
 					collectionVersionInfo.Metadata.Dependencies = manifest.CollectionInfo.Dependencies
 					collectionVersionInfo.Files = files
 
+					c.Response().Header().Add("X-Cache-Status", "LOCAL")
 					return c.JSON(http.StatusOK, collectionVersionInfo)
 				}(c)
 			}
@@ -201,6 +204,7 @@ func GalaxyLocalCollectionGet(key string) echo.HandlerFunc {
 			logger.Named(loggerNS).Debugf("Collection not found: %s/%s", namespace, name)
 			return c.String(http.StatusNotFound, "")
 		}
+		c.Response().Header().Add("X-Cache-Status", "LOCAL")
 		c.Response().Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s-%s-%s.tar.gz\"", namespace, name, version))
 		return c.File(dest)
 	}

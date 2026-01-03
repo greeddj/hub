@@ -28,9 +28,10 @@ func downloadAndCacheFile(c echo.Context, key, loggerNS, url, dest string) error
 		logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 		if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 			logger.Named(loggerNS).Errorf("[FS]: %s", err)
+			c.Response().Header().Add("X-Cache-Status", "ERROR")
 			return c.String(status, "410 Gone\n")
 		}
-		c.Response().Header().Add("X-Cache-Status", "HIT")
+		c.Response().Header().Add("X-Cache-Status", "STALE")
 		logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 	} else {
 		c.Response().Header().Add("X-Cache-Status", "MISS")
@@ -62,9 +63,10 @@ func GoProxyList(key string) echo.HandlerFunc {
 			logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 			if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 				logger.Named(loggerNS).Errorf("[FS]: %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, "410 Gone\n")
 			}
-			c.Response().Header().Add("X-Cache-Status", "HIT")
+			c.Response().Header().Add("X-Cache-Status", "STALE")
 			logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 		} else {
 			c.Response().Header().Add("X-Cache-Status", "MISS")
@@ -161,8 +163,10 @@ func GoProxyZip(key string) echo.HandlerFunc {
 			logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 			if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 				logger.Named(loggerNS).Errorf("[FS]: %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, "410 Gone\n")
 			}
+			c.Response().Header().Add("X-Cache-Status", "STALE")
 			logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 		} else {
 			c.Response().Header().Add("X-Cache-Status", "MISS")
@@ -205,9 +209,10 @@ func GoProxyLatest(key string) echo.HandlerFunc {
 				logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 				if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 					logger.Named(loggerNS).Errorf("[FS]: %s", err)
+					c.Response().Header().Add("X-Cache-Status", "ERROR")
 					return c.String(status, "410 Gone\n")
 				}
-				c.Response().Header().Add("X-Cache-Status", "HIT")
+				c.Response().Header().Add("X-Cache-Status", "STALE")
 				logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 			} else {
 				c.Response().Header().Add("X-Cache-Status", "MISS")

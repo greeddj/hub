@@ -32,11 +32,13 @@ func GalaxyProxyCollection(key string) echo.HandlerFunc {
 			logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 			if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 				logger.Named(loggerNS).Errorf("[FS]: %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, fmt.Sprintf("%v", err))
 			}
-			c.Response().Header().Add("X-Cache-Status", "HIT")
+			c.Response().Header().Add("X-Cache-Status", "STALE")
 			logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 		} else {
+			c.Response().Header().Add("X-Cache-Status", "MISS")
 			logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, dest)
 		}
 		var collection types.GalaxyCollection
@@ -69,11 +71,13 @@ func GalaxyProxyCollectionVersions(key string) echo.HandlerFunc {
 			logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 			if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 				logger.Named(loggerNS).Errorf("[FS]: %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, fmt.Sprintf("%v", err))
 			}
-			c.Response().Header().Add("X-Cache-Status", "HIT")
+			c.Response().Header().Add("X-Cache-Status", "STALE")
 			logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 		} else {
+			c.Response().Header().Add("X-Cache-Status", "MISS")
 			logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, dest)
 		}
 		var collectionVersions types.GalaxyCollectionVersions
@@ -107,11 +111,13 @@ func GalaxyProxyCollectionVersionInfo(key string) echo.HandlerFunc {
 			logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 			if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 				logger.Named(loggerNS).Errorf("[FS]: %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(http.StatusNotFound, "")
 			}
-			c.Response().Header().Add("X-Cache-Status", "HIT")
+			c.Response().Header().Add("X-Cache-Status", "STALE")
 			logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 		} else {
+			c.Response().Header().Add("X-Cache-Status", "MISS")
 			logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, dest)
 		}
 		var CollectionVersionInfo types.GalaxyCollectionVersionInfo
@@ -148,6 +154,7 @@ func GalaxyProxyCollectionGet(key string) echo.HandlerFunc {
 			_, err := misc.DownloadFile(url, versionFile, headers)
 			if err != nil {
 				logger.Named(loggerNS).Errorf("[Downloading] %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(http.StatusBadRequest, "Downloading error")
 			}
 			logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, versionFile)
@@ -167,6 +174,7 @@ func GalaxyProxyCollectionGet(key string) echo.HandlerFunc {
 			status, err := misc.DownloadFile(url, dest, headers)
 			if err != nil {
 				logger.Named(loggerNS).Errorf("[Downloading] %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, fmt.Sprintf("%v", err))
 			}
 			c.Response().Header().Add("X-Cache-Status", "MISS")
@@ -183,6 +191,7 @@ func GalaxyProxyCollectionGet(key string) echo.HandlerFunc {
 				status, err := misc.DownloadFile(url, dest, headers)
 				if err != nil {
 					logger.Named(loggerNS).Errorf("[Downloading] %s", err)
+					c.Response().Header().Add("X-Cache-Status", "ERROR")
 					return c.String(status, fmt.Sprintf("%v", err))
 				}
 				logger.Named(loggerNS).Debugf("Downloaded %s", url)

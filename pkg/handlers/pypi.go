@@ -35,11 +35,13 @@ func PypiSimple(key string) echo.HandlerFunc {
 			logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 			if _, err = os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 				logger.Named(loggerNS).Errorf("[FS]: %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, "Please check logs...")
 			}
-			c.Response().Header().Add("X-Cache-Status", "HIT")
+			c.Response().Header().Add("X-Cache-Status", "STALE")
 			logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 		} else {
+			c.Response().Header().Add("X-Cache-Status", "MISS")
 			logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, dest)
 		}
 
@@ -109,12 +111,14 @@ func PypiPackages(key string) echo.HandlerFunc {
 			_, err := misc.DownloadFile(url, indexDest, headers)
 			if err != nil {
 				logger.Named(loggerNS).Errorf("[Downloading] %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(http.StatusBadRequest, "Downloading error")
 			}
 			logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, indexDest)
 			err = pypiMetadata.ReadFromJSONFile(indexDest)
 			if err != nil {
 				logger.Named(loggerNS).Errorf("Unable to parse local json file %s, got error: %s", indexDest, err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(http.StatusBadRequest, "Metadata error")
 			}
 		}
@@ -136,6 +140,7 @@ func PypiPackages(key string) echo.HandlerFunc {
 			status, err := misc.DownloadFile(url, dest, headers)
 			if err != nil {
 				logger.Named(loggerNS).Errorf("Downloading %s error: %s", url, err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, fmt.Sprintf("%v", err))
 			}
 			logger.Named(loggerNS).Debugf("Local file %s not found", dest)
@@ -152,6 +157,7 @@ func PypiPackages(key string) echo.HandlerFunc {
 				status, err := misc.DownloadFile(url, dest, headers)
 				if err != nil {
 					logger.Named(loggerNS).Errorf("[Downloading] %s", err)
+					c.Response().Header().Add("X-Cache-Status", "ERROR")
 					return c.String(status, fmt.Sprintf("%v", err))
 				}
 				logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, dest)
