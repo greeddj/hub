@@ -56,6 +56,12 @@ func RubyGems(key string) echo.HandlerFunc {
 		if _, err := os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 			cacheExists = false
 		} else {
+			isGemPath := strings.HasPrefix(upstreamPath, "gems/") && strings.HasSuffix(upstreamPath, ".gem")
+			if isGemPath {
+				c.Response().Header().Add("X-Cache-Status", "HIT")
+				return c.File(dest)
+			}
+
 			equal, err := misc.FilesEqual(url, dest)
 			if err != nil {
 				logger.Named(loggerNS).Errorf("[FilesEqual]: %s", err)
