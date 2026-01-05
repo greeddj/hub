@@ -11,6 +11,7 @@ import (
 type ConfigFile struct {
 	Dir    string `yaml:"dir"`
 	Server struct {
+		Cargo  map[string]CargoSource `yaml:"cargo"`
 		Galaxy map[string]struct {
 			URL string `yaml:"url"`
 			Dir string `yaml:"dir"`

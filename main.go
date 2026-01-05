@@ -196,6 +196,18 @@ func startServer(c *cli.Context) error {
 		n.GET("/*", handlers.NpmProxy(k)).Name = fmt.Sprintf("npm::%s", k)
 	}
 
+	for k, source := range cfg.Server.Cargo {
+		if source.Base == "" {
+			log.Fatal("[CARGO] Wrong config definition, please set base URL.")
+		}
+		cg := e.Group(fmt.Sprintf("/cargo/%s", k))
+		cg.GET("/*", handlers.CargoIndex(k)).Name = fmt.Sprintf("cargo::%s::index_root", k)
+		cg.GET("/index/*", handlers.CargoIndex(k)).Name = fmt.Sprintf("cargo::%s::index", k)
+		cg.GET("/crates/:crate/:version/download", handlers.CargoCrateDownload(k)).Name = fmt.Sprintf("cargo::%s::crates", k)
+		cg.GET("/api/*", handlers.CargoAPIProxy(k)).Name = fmt.Sprintf("cargo::%s::api", k)
+		cg.HEAD("/api/*", handlers.CargoAPIProxy(k)).Name = fmt.Sprintf("cargo::%s::api::head", k)
+	}
+
 	for k, v := range cfg.Server.Galaxy {
 		g := e.Group(fmt.Sprintf("/galaxy/%s", k))
 		if v.URL != "" && v.Dir != "" {

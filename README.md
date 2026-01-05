@@ -22,6 +22,11 @@ server:
     golang: https://proxy.golang.org
   npm:
     npmjs: https://registry.npmjs.org
+  cargo:
+    my-registry: https://registry.example.com
+    crates.io:
+      base: https://crates.io
+      index: https://index.crates.io
 ```
 
 ## Usage
@@ -133,3 +138,53 @@ The proxy supports the following npm registry endpoints:
 - `/{package}/-/{tarball}.tgz` - package tarball
 - `/@scope/{name}/-/{tarball}.tgz` - scoped package tarball
 - `/-/v1/search` - search (cached for 10 minutes)
+
+### Cargo (Rust registry)
+
+To use HUB as a Cargo registry proxy, add a registry to `.cargo/config.toml`:
+
+```toml
+[registries]
+hub = { index = "sparse+http://localhost:6587/cargo/crates.io/" }
+```
+
+You can also use an env var instead of a config file:
+
+```bash
+export CARGO_REGISTRIES_HUB_INDEX=sparse+http://localhost:6587/cargo/crates.io/
+```
+
+For full replace crates.io:
+
+```toml
+[source.crates-io]
+replace-with = "hub"
+
+[source.hub]
+registry = "sparse+http://localhost:6587/cargo/crates.io/"
+```
+
+The proxy supports `sparse` index files, crate downloads, and `cargo search` via `GET`/`HEAD` requests.
+
+Cargo proxy fields:
+
+- `base` (required) — registry base URL.
+- `index` (optional) — index URL; defaults to `base + /index`.
+- `dl` (optional) — crate download URL; defaults to `base + /api/v1/crates`.
+- `api` (optional) — API URL; defaults to `base + /api`.
+
+The proxy supports the following Cargo endpoints:
+
+- `/cargo/<key>/index/config.json` — generated `config.json`.
+- `/cargo/<key>/index/*` — sparse index proxy/cache.
+- `/cargo/<key>/config.json` — generated `config.json` (index root alias).
+- `/cargo/<key>/*` — sparse index proxy/cache (index root).
+- `/cargo/<key>/crates/{crate}/{version}/download` — crate download proxy/cache.
+- `/cargo/<key>/api/*` — API proxy (for `cargo search`).
+
+For registries with a dedicated index host (like `crates.io`), set `index` explicitly.
+
+Cargo proxy limitations:
+
+- Only the sparse index protocol is supported (no git index).
+- Authorization headers are not forwarded (no private registries).

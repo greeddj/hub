@@ -17,3 +17,7 @@ server:
     golang: https://proxy.golang.org
   npm:
     npmjs: https://registry.npmjs.org
+  cargo:
+    crates.io:
+      base: https://crates.io
+      index: https://index.crates.io
