@@ -26,8 +26,9 @@ func Static(key string) echo.HandlerFunc {
 			"User-Agent": "curl",
 		}
 
+		cacheExists := true
 		if _, err := os.Stat(dest); errors.Is(err, os.ErrNotExist) {
-			c.Response().Header().Add("X-Cache-Status", "MISS")
+			cacheExists = false
 		} else {
 			equal, err := misc.FilesEqual(url, dest)
 			if err != nil {
@@ -38,17 +39,24 @@ func Static(key string) echo.HandlerFunc {
 				c.Response().Header().Add("X-Cache-Status", "HIT")
 				return c.File(dest)
 			}
-			c.Response().Header().Add("X-Cache-Status", "EXPIRE")
 		}
+
 		status, err := misc.DownloadFile(url, dest, headers)
 		if err != nil {
 			logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 			if _, err := os.Stat(dest); errors.Is(err, os.ErrNotExist) {
 				logger.Named(loggerNS).Errorf("[FS]: %s", err)
+				c.Response().Header().Add("X-Cache-Status", "ERROR")
 				return c.String(status, "Please check logs...")
 			}
+			c.Response().Header().Add("X-Cache-Status", "STALE")
 			logger.Named(loggerNS).Debugf("Remote %s served from local file %s", url, dest)
 		} else {
+			if cacheExists {
+				c.Response().Header().Add("X-Cache-Status", "EXPIRED")
+			} else {
+				c.Response().Header().Add("X-Cache-Status", "MISS")
+			}
 			logger.Named(loggerNS).Debugf("Remote %s saved as %s", url, dest)
 		}
 		return c.File(dest)

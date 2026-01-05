@@ -24,10 +24,10 @@ type TemplateRegistry struct {
 	Templates *template.Template
 }
 
-func (t *TemplateRegistry) Render(w io.Writer, name string, data interface{}, _ echo.Context) error {
+func (t *TemplateRegistry) Render(w io.Writer, name string, data any, _ echo.Context) error {
 	return t.Templates.ExecuteTemplate(w, name, data)
 }
 
-func KindIs(v interface{}, kind string) bool {
+func KindIs(v any, kind string) bool {
 	return reflect.TypeOf(v).Kind().String() == kind
 }

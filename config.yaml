@@ -15,3 +15,5 @@ server:
     get_helm: https://get.helm.sh
   goproxy:
     golang: https://proxy.golang.org
+  npm:
+    npmjs: https://registry.npmjs.org

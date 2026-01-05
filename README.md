@@ -8,7 +8,7 @@ server:
   pypi:
     pypi.org: https://pypi.org/simple
   rubygems:
-    rubygems.org: https://rubygems.org
+    rubygems: https://rubygems.org
   galaxy:
     ansible:
       url: https://galaxy.ansible.com
@@ -20,6 +20,8 @@ server:
     get_helm: https://get.helm.sh
   goproxy:
     golang: https://proxy.golang.org
+  npm:
+    npmjs: https://registry.npmjs.org
 ```
 
 ## Usage
@@ -74,8 +76,6 @@ source "https://rubygems.org" do
 end
 ```
 
-
-
 ### Static files
 
 Access cached static files:
@@ -105,3 +105,31 @@ The proxy supports all standard GOPROXY protocol endpoints:
 - `/{module}/@v/{version}.mod` - go.mod file for the version
 - `/{module}/@v/{version}.zip` - source code archive
 - `/{module}/@latest` - latest version info
+
+### NPM
+
+To use HUB as an npm registry proxy, set the `registry` to your HUB instance:
+
+```bash
+npm config set registry http://localhost:6587/npm/npmjs
+```
+
+For a scoped registry:
+
+```bash
+npm config set @my-scope:registry http://localhost:6587/npm/npmjs
+```
+
+Or it can be used in the file `.npmrc`
+
+```ini
+registry=http://localhost:6587/npm/npmjs
+```
+
+The proxy supports the following npm registry endpoints:
+
+- `/{package}` - package metadata (packument)
+- `/@scope%2F{name}` - scoped package metadata (packument)
+- `/{package}/-/{tarball}.tgz` - package tarball
+- `/@scope/{name}/-/{tarball}.tgz` - scoped package tarball
+- `/-/v1/search` - search (cached for 10 minutes)

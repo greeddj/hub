@@ -114,8 +114,12 @@ func startServer(c *cli.Context) error {
 				c.Error(err)
 			}
 			stop := time.Now()
+			cacheStatus := res.Header().Get("X-Cache-Status")
+			if cacheStatus == "" {
+				cacheStatus = "UNKNOWN"
+			}
 			message := fmt.Sprintf(
-				"[%s] %s %s requested from %s with status %d in %s [%s]",
+				"[%s] %s %s requested from %s with status %d in %s [%s] cache=%s",
 				c.Request().Host,
 				req.Method,
 				req.RequestURI,
@@ -123,6 +127,7 @@ func startServer(c *cli.Context) error {
 				res.Status,
 				stop.Sub(start).String(),
 				c.Path(),
+				cacheStatus,
 			)
 
 			logger := c.Get("logger").(*zap.SugaredLogger)
@@ -184,6 +189,11 @@ func startServer(c *cli.Context) error {
 				return c.String(http.StatusNotFound, "404 page not found")
 			}
 		}).Name = fmt.Sprintf("goproxy::%s", k)
+	}
+
+	for k := range cfg.Server.NPM {
+		n := e.Group(fmt.Sprintf("/npm/%s", k))
+		n.GET("/*", handlers.NpmProxy(k)).Name = fmt.Sprintf("npm::%s", k)
 	}
 
 	for k, v := range cfg.Server.Galaxy {
