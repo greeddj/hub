@@ -9,9 +9,9 @@ ENV CGO_ENABLED=0
 ADD . /build
 WORKDIR /build
 
-RUN apk add --no-cache --update git tzdata ca-certificates make
+RUN apk add --no-cache --update git tzdata ca-certificates just
 
-RUN make linux
+RUN just linux
 
 FROM scratch
 

@@ -136,7 +136,7 @@ func handleNpmMetadata(c echo.Context, cfg types.ConfigFile, logger *zap.Sugared
 	}
 
 	var packument map[string]any
-	if err := json.Unmarshal(payload, &packument); err != nil {
+	if err = json.Unmarshal(payload, &packument); err != nil {
 		logger.Named(loggerNS).Errorf("Metadata unmarshal error: %s", err)
 		return c.String(http.StatusBadRequest, "Metadata error")
 	}

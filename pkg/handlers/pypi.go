@@ -89,7 +89,7 @@ func PypiPackages(key string) echo.HandlerFunc {
 					"User-Agent": "pypi",
 					"Accept":     "application/vnd.pypi.simple.v1+json",
 				}
-				_, err := misc.DownloadFile(url, indexDest, headers)
+				_, err = misc.DownloadFile(url, indexDest, headers)
 				if err != nil {
 					logger.Named(loggerNS).Errorf("[Downloading] %s", err)
 				}

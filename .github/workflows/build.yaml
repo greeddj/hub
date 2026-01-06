@@ -12,23 +12,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: checkout
+        uses: actions/checkout@v6
+
+      - name: set up just
+        uses: extractions/setup-just@v3
+
       - name: set up go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: "stable"
+          go-version-file: 'go.mod'
           cache: false
         id: go
 
-      - name: checkout
-        uses: actions/checkout@v4
-
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v9
         with:
           version: latest
 
+      - name: check
+        run: |
+          just check
+
       - name: build
         run: |
-          make build
+          just build
           build/hub --version
           build/hub s --help

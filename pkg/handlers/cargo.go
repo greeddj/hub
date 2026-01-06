@@ -65,7 +65,7 @@ func CargoIndex(key string) echo.HandlerFunc {
 
 		if cleaned == "config.json" {
 			dest := filepath.Join(cfg.Dir, "cargo", key, "index", "config.json")
-			if _, err := os.Stat(dest); err == nil {
+			if _, err = os.Stat(dest); err == nil {
 				c.Response().Header().Add("X-Cache-Status", "HIT")
 				c.Response().Header().Set("Content-Type", "application/json")
 				return c.File(dest)
@@ -76,16 +76,16 @@ func CargoIndex(key string) echo.HandlerFunc {
 				DL:  fmt.Sprintf("%s/cargo/%s/crates/{crate}/{version}/download", baseURL, key),
 				API: fmt.Sprintf("%s/cargo/%s/api", baseURL, key),
 			}
-			data, err := json.Marshal(payload)
-			if err != nil {
-				logger.Named(loggerNS).Errorf("Config marshal error: %s", err)
+			data, errMarshal := json.Marshal(payload)
+			if errMarshal != nil {
+				logger.Named(loggerNS).Errorf("Config marshal error: %s", errMarshal)
 				return c.String(http.StatusInternalServerError, "")
 			}
-			if err := os.MkdirAll(filepath.Dir(dest), 0o750); err != nil {
+			if err = os.MkdirAll(filepath.Dir(dest), 0o750); err != nil {
 				logger.Named(loggerNS).Errorf("Config directory error: %s", err)
 				return c.String(http.StatusInternalServerError, "")
 			}
-			if err := os.WriteFile(dest, data, 0o600); err != nil {
+			if err = os.WriteFile(dest, data, 0o600); err != nil {
 				logger.Named(loggerNS).Errorf("Config write error: %s", err)
 				return c.String(http.StatusInternalServerError, "")
 			}
@@ -176,7 +176,7 @@ func CargoCrateDownload(key string) echo.HandlerFunc {
 			"User-Agent": "cargo",
 		}
 
-		if _, err := os.Stat(dest); err == nil {
+		if _, err = os.Stat(dest); err == nil {
 			c.Response().Header().Add("X-Cache-Status", "HIT")
 			c.Response().Header().Set("Content-Type", "application/octet-stream")
 			return c.File(dest)
